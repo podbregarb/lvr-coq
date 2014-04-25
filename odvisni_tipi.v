@@ -104,16 +104,22 @@ Section Vaje1.
   (** Spomnimo se vaje iz predikatnega računa: *)
   Lemma vaja_1 : forall n : nat, exists m : nat, n < m.
   Proof.
-    (* predvanja *)
-    admit.
+    intro n.
+    exists (S n).
+    auto.
   Qed.
 
   (** Zapišimo jo s tipi. Enak dokaz še vedno deluje. *)
   Lemma vaja1_2 : forall n : nat, { m : nat & n < m }.
   Proof.
-    (* predavanja *)
-    admit.
+    intro n.
+    exists (S n).
+    auto.
   Qed.
+
+  Print vaja1_2.
+  Check le_n.
+  Print le_n.
 
   (** Kako bi rešili vajo neposredno, z definicijo funkcije?
       Funkcijo, ki bi jo radi napisali, že imamo in jo dobimo
@@ -129,8 +135,9 @@ Section Vaje1.
    *)
   Lemma vaja1_3 : forall n : nat, { m : nat & n < m }.
   Proof.
-    (* predavanja *)
-    admit.
+    refine (fun n : nat => existT _ (S n) _). (* refine poskuša napolniti luknje, ki jih mi nismo znali v funkciji *)
+    (* pri refine dobimo pogoale, da dopolnimo luknje v funkciji (tam kjer še refine ne zna) *)
+    auto.
   Defined.
 
 End Vaje1.
@@ -147,24 +154,33 @@ Section Frobenius.
   Theorem frobenius1 (A : Type) (P : A -> Prop) (Q : Prop) :
     (exists a : A, Q /\ P a) -> Q /\ exists a : A, P a.
   Proof.
-    (* predavanja *)
-    admit.
+    (* firstorder. dela; naredi vse *)
+    intros [a  [G H]].
+    split.
+    - assumption.
+    - exists a.
+      assumption.
   Qed.
 
   (** Tipi (tu pišemo [(.....)%type], sicer Coq misli, da * pomeni množenje
       števil. *)
   Theorem frobenius2 (A : Type) (P : A -> Type) (Q : Type) :
-    ({ a : A & Q * P a } -> Q * { a : A & P a })%type.
+    ({ a : A & Q * P a } -> Q * { a : A & P a })%type.   (* {} so vsote, * je konjunkcija *)
   Proof.
-    (* predavanja *)
-    admit.
+    intros [a  [G H]].
+    split.
+    - assumption.
+    - exists a.
+      assumption.    (* predavanja *)
   Qed.
 
   (** Neposredna definicija *)
   Definition frobenius3 (A : Type) (P : A -> Type) (Q : Type) :
-    ({ a : A & Q * P a } -> Q * { a : A & P a })%type.
-  (* predavanja *)
-  Admitted.
+    ({ a : A & Q * P a } -> Q * { a : A & P a })%type
+    :=
+    (fun p => (fst(projT2 p), existT _ (projT1 p) (snd(projT2 p)))).  (* projT2 za tipe, potem dobimo navadni produkt, zato fst :) *)
+  (* podčrtaj smo napisali, ker nismo vedeli kaj vstaviti, Coq sam vstavi not kar je treba, če zna *)
+
 
   (** Za vajo naredi isto z obratno implikacijo. Najprej s taktikami: *)
   Theorem frobenius4 (A : Type) (P : A -> Prop) (Q : Prop) :

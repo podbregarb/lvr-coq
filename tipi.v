@@ -1,64 +1,64 @@
 (** * Teorija tipov in λ-račun. *)
 
-(** Tipi so posplošitev množic, topološki prostorov in podatkovnih tipov. Naivno si jih
-    lahko predstavljamo kot množice. Dejstvo, da ima izraz [e] tip [A] pišemo [e : A].
+(** Tipi so posplošitev množic, topoloških prostorov in podatkovnih tipov. Naivno si jih
+lahko predstavljamo kot množice. Dejstvo, da ima izraz [e] tip [A] pišemo [e : A].
 
-    Razne konstrukcije tipov se vedno uvede po istem vzorcu:
+Razne konstrukcije tipov se vedno uvede po istem vzorcu:
 
-    - _formacija_: kako se naredi nov tip
+- _formacija_: kako se naredi nov tip
 
-    - _vpeljava_: kako se naredi ali sestavi elemente tipa (konstruktorji)
+- _vpeljava_: kako se naredi ali sestavi elemente tipa (konstruktorji)
 
-    - _uporaba_: kako se elemente uporabi ali razstavi na sestavne dele (eliminatorji)
+- _upraba_: kako se elemente uporabi ali razstavi na sestavne dele (eliminatorji)
 
-    - _enačbe_: kakšne enačbe povezujejo konstruktorje in eliminatorje
+- _enačbe_: kakšne enačbe povezujejo konstruktorje in eliminatorje
 *)
 
 (** ** Funkcije
 
-  Za vsaka dva tipa [A] in [B] lahko tvorimo tip funkcij:
+Za vsaka dva tipa [A] in [B] lahko tvorimo tip funkcij:
 
-  - _formacija_: če sta [A] in [B] tipa, je tudi [A -> B] tip
+- _formacija_: če sta [A] in [B] tipa, je tudi [A -> B] tip
 
-  - _vpeljava_: če je [x : A] spremenljivka tipa [A] in [t : B] izraz tipa [B],
-    odvisen od [x], potem je [fun (x : A) => t] tipa [A -> B]. Izrazu [fun ...]
-    pravimo _λ-abstrakcija_, ker se v logiki piše $\lambda x : A . t$.
+- _vpeljava_: če je [x : A] spremenljivka tipa [A] in [t : B] izraz tipa [B],
+odvisen od [x], potem je [fun (x : A) => t] tipa [A -> B]. Izrazu [fun ...]
+pravimo _λ-abstrakcija_, ker se v logiki piše $\lambda x : A . t$.
 
-  - _uporaba_: če je [f : A -> B] in [e : A] potem je [f e : B]. Pravimo, da smo
-    funkcijo [f] aplicirali na argumentu [e].
+- _uporaba_: če je [f : A -> B] in [e : A] potem je [f e : B]. Pravimo, da smo
+funkcijo [f] aplicirali na argumentu [e].
 
-  - _enačbe_:
+- _enačbe_:
 
-    - _pravilo $\beta$_: [(fun (x : A) => t) e = t{e/x}] kjer zapis "[t{e/x}]" pomeni,
-      da v izrazu [t] vstavimo [e] namesto [x].
+- _pravilo $\beta$_: [(fun (x : A) => t) e = t{e/x}] kjer zapis "[t{e/x}]" pomeni,
+da v izrazu [t] vstavimo [e] namesto [x].
 
-    - _pravilo $\eta$_: [(fun (x : A) => f x) = f]
+- _pravilo $\eta$_: [(fun (x : A) => f x) = f]
 *)
    
 (** ** Kartezični produkt
 
-    Da bomo lahko počeli kaj zanimivega, vpeljemo še kartezični produkt tipov:
+Da bomo lahko počeli kaj zanimivega, vpeljemo še kartezični produkt tipov:
 
-    - _formacija_: če sta [A] in [B] tipa, je [A * B] tip (matematični zapis $A \times B$)
+- _formacija_: če sta [A] in [B] tipa, je [A * B] tip (matematični zapis $A \times B$)
 
-    - _vpeljava_: če je [a : A] in [b : B], potem je [(a,b) : A * B], _urejeni par_
+- _vpeljava_: če je [a : A] in [b : B], potem je [(a,b) : A * B], _urejeni par_
 
-    - _uporaba_: če je [p : A * B], potem imamo
+- _uporaba_: če je [p : A * B], potem imamo
 
-      - _prva projekcija_: [fst p : A]
-      - _druga projekcija_: [snd p : B]
+- _prva projekcija_: [fst p : A]
+- _druga projekcija_: [snd p : B]
 
-    - enačbe, pri čemer je [a : A], [b : B] in [p : A * B]:
-      - [fst (a, b) = a]
-      - [snd (a, b) = b]
-      - [p = (fst p, snd p)]
+- enačbe, pri čemer je [a : A], [b : B] in [p : A * B]:
+- [fst (a, b) = a]
+- [snd (a, b) = b]
+- [p = (fst p, snd p)]
 
-    Poznamo še enotski tip:
+Poznamo še enotski tip:
 
-    - _formacija_: [unit] je tip
-    - _vpeljava_: [tt : unit]
-    - _uporaba_: pravil za uporabo ni
-    - _enačbe_: če je [u : unit], je [u = tt].
+- _formacija_: [unit] je tip
+- _vpeljava_: [tt : unit]
+- _uporaba_: pravil za uporabo ni
+- _enačbe_: če je [u : unit], je [u = tt].
 *)
 
 (** V Coqu lahko datoteko razdelimo na posamične razdelke z [Section X.] in [End X.] *)
@@ -70,36 +70,40 @@ Section RazneFunkcije.
   Definition vaja1_1 : A * B -> B * A :=
     fun (u : A * B) => (snd u, fst u).
                                   
-  Definition vaja1_2 : (A * B) * C -> A * (B * C).
-  Admitted.
+  Definition vaja1_2 : (A * B) * C -> A * (B * C) :=
+    fun (p : (A * B) * C) => (fst (fst (p)), (snd (fst p),snd p)).
 
-  Definition vaja1_3 : A -> (B -> A).
-  Admitted.
+  Definition vaja1_3 : A -> (B -> A) :=
+    fun (p : A) => (fun t: B => p).
+  
+  Definition vaja1_4 : (A -> B -> C) -> (A -> B) -> (A -> C) :=
+    fun (f : A -> B -> C) => fun (g : A -> B) => (fun h : A => f h (g h)). 
+  
+
+  Definition vaja1_5 : (A * B -> C) -> (A -> (B -> C)) :=
+    fun (f : (A * B -> C)) => (fun p : A => (fun r : B => f (p,r))).
 
   
-  Definition vaja1_4 : (A -> B -> C) -> (A -> B) -> (A -> C).
-  Admitted.
+  Definition vaja1_6 : (A -> (B -> C)) -> (A * B -> C) :=
+    fun (f : A -> (B -> C)) => (fun p : A * B => f (fst p) (snd p)).
 
-  Definition vaja1_5 : (A * B -> C) -> (A -> (B -> C)).
-  Admitted.
-  
-  Definition vaja1_6 : (A -> (B -> C)) -> (A * B -> C).
-  Admitted.
 
-  Definition vaja1_7 : unit * A -> A.
-  Admitted.
+  Definition vaja1_7 : unit * A -> A :=
+    fun (p : unit * A) => snd p.
 
-  Definition vaja1_8 : A -> unit * A.
-  Admitted.
+  Definition vaja1_8 : A -> unit * A :=
+    fun (a : A) => (tt, a).
+
+Print vaja1_1.
 
 End RazneFunkcije.
 
 (** Ko zapremo razdelek [RazneFunkcije] nimamo več predpostavke, da so [A], [B], [C] tipi,
-    vse definicije iz razdelka pa postanejo funkcije z dodatnimi parametri [A], [B], [C]. *)
+vse definicije iz razdelka pa postanejo funkcije z dodatnimi parametri [A], [B], [C]. *)
 Print vaja1_1.
 
 (** Coq pravi: "Arguments [A], [B] are implicit and maximally inserted". To pomeni,
-    da jih ni treba podati, ko uporabimo funkcijo [vaja1_1]. *)
+da jih ni treba podati, ko uporabimo funkcijo [vaja1_1]. *)
 Eval compute in vaja1_1 (42, false).
 
 (* Če želimo eksplicitno nastaviti tudi [A] in [B], pišemo [@vaja1_1] namesto [vaja1_1]: *)
@@ -107,15 +111,15 @@ Eval compute in @vaja1_1 nat bool (42, false).
 
 (** ** Izomorfni tipi
 
-   Pravimo, da sta tipa [X] in [Y] izomorfna, če obstajata [f : X -> Y] in
-   [g : Y -> X], da velja [g (f x) = x] za vse [x : X] in [g (g y) = y] za vse [y : Y].
+Pravimo, da sta tipa [X] in [Y] izomorfna, če obstajata [f : X -> Y] in
+[g : Y -> X], da velja [g (f x) = x] za vse [x : X] in [g (g y) = y] za vse [y : Y].
 *)
 Definition iso (X : Type) (Y : Type) :=
   exists (f : X -> Y) (g : Y -> X),
     (forall x : X, g (f x) = x) /\ (forall y : Y, f (g y) = y).
 
 (** V Coqu lahko uvedemo prikladno notacijo za izomorfizem. *)
-Notation "X <~> Y" := (iso X Y) (at level 60).
+Notation "X <~> Y" := (iso X Y) (at level 100). (* at level 50 - prioriteta za operacijo? *)
 
 Section Izomorfizmi1.
   (** Predpostavimo, da imamo tipe [A], [B] in [C]. *)
@@ -125,93 +129,141 @@ Section Izomorfizmi1.
 
   Lemma vaja2_1 : A * B <~> B * A.
   Proof.
-    admit.
+    unfold iso. (* to lahko izbrišemo, pa vseeno dela *)
+    exists vaja1_1, vaja1_1. (* Coq je pameten :P *)
+    simpl. (* simplify *) (* to lahko izbrišemo, pa vseeno dela *)
+    tauto.    
   Qed.
 
   Lemma vaja2_2 : (A * B) * C <~> A * (B * C).
   Proof.
-    admit.
+    unfold iso.
+    exists vaja1_2.
+    exists (fun a : A * (B * C) => ((fst a, fst (snd a)), snd (snd a))).
+    tauto.    
   Qed.
 
   Lemma vaja2_3 : unit * A <~> A.
   Proof.
-    admit.
+    unfold iso.
+    exists 
+       (fun p : unit * A => snd p), 
+       (fun a : A => (tt, a)).
+    split.
+    - intro x.
+      destruct x.
+      simpl.
+      destruct u.
+      reflexivity. (* ali auto. itd. *)
+    (* zgornjo alinejo bi lahko naredili hitreje/lepše:
+       - intros [[] a].    --- prazen vzorec []; ker se da unit razstaviti na nič :P
+         reflexivity. *)
+    - intro a.
+      reflexivity. (* ali auto. itd. *)
   Qed.
 
   (** Pravimo, da sta funkciji [f g : X -> Y] _enaki po točkah_, če velja [forall x : X, f
-      x = g x]. Aksiom _funkcijske ekstenzionalnosti_ pravi, da sta funkciji enaki,
-      če sta enaki po točkah. Coq ne verjame v ta aksiom, zato ga po potrebi predpostavimo. 
-      Najprej ga definirajmo. *)
+x = g x]. Aksiom _funkcijske ekstenzionalnosti_ pravi, da sta funkciji enaki,
+če sta enaki po točkah. Coq ne verjame v ta aksiom, zato ga po potrebi predpostavimo.
+Najprej ga definirajmo. *)
   Definition funext :=
     forall (X Y : Type) (f g : X -> Y), (forall x, f x = g x) -> f = g.
 
   (** S pomočjo ekstenzionalnosti lahko dokažemo nekatere izomorfizme. *)
   Lemma vaja2_4 (F : funext) : (A * B -> C) <~> (A -> (B -> C)).
   Proof.
-    admit.
+    unfold iso.
+    exists vaja1_5, vaja1_6.
+    split.
+    - intro.
+      apply F.
+      intros [].
+      reflexivity.
+    - tauto.
   Qed.
 
   Lemma vaja2_5 (F : funext) : (unit -> A) <~> A.
   Proof.
-    admit.
+    unfold iso.
+    exists
+      (fun (h : unit -> A) => h tt), (* h(tt) bo tipa A; to smo rabli *)
+      (fun (a : A) (x : unit) => a). (* ali (fun h => h tt), (fun a _ => a); tipov ne rabimo pisat, Coq jih pogrunta sam, prav tako nismo nikjer uporabili x, zato lahko napišemo kar _ *)
+    split.
+    - intro h.
+      apply F. (* uporabimo funkcijsko ekstenzionalnost - glej postopek prej :P *)
+      intros [].
+      reflexivity.
+    - tauto.
   Qed.
 
   Lemma vaja2_6 (F : funext) : (A -> unit) <~> unit.
   Proof.
-    admit.
+    unfold iso.
+    exists
+      (fun (h : A -> unit) => tt),
+      (fun (k : unit) => (fun l : A => tt)).
+    split.
+    - intro h.
+      apply F.
+      intro.
+      destruct h.
+      reflexivity.
+    - intro.
+      destruct y.
+      reflexivity.
   Qed.
 End Izomorfizmi1.
 
 (** ** Vsota tipov
 
-   Vsota tipov je kot disjunktna unija v teorijo množic ali koprodukt v kategorijah:
+Vsota tipov je kot disjunktna unija v teorijo množic ali koprodukt v kategorijah:
 
-   - _formacija_: če sta [A] in [B] tipa, je [A + B] tip
+- _formacija_: če sta [A] in [B] tipa, je [A + B] tip
 
-   - _vpeljava_:
+- _vpeljava_:
 
-      - če je [a : A], potem je [inl a : A + B]
-      - če je [b : B], potem je [inr b : A + B]
+- če je [a : A], potem je [inl a : A + B]
+- če je [b : B], potem je [inr b : A + B]
 
-   - _uporaba_: če pri predpostavki [x : A] velja [u(x) : C] in
-     če pri predpostavki [y : B] velja [v(y) : C] in če je [t : A + B], potem
-     ima
-     [(match t with
-       | inl x => u(x)
-       | inr y => v(y)
-      end)]
-     tip [C].
+- _uporaba_: če pri predpostavki [x : A] velja [u(x) : C] in
+če pri predpostavki [y : B] velja [v(y) : C] in če je [t : A + B], potem
+ima
+[(match t with
+| inl x => u(x)
+| inr y => v(y)
+end)]
+tip [C].
 
-   - _enačbe_:
+- _enačbe_:
 
-      - [match (inl a) with
-         | x => u(x)
-         | y => v(y)
-         end] je enako [u(a)].
+- [match (inl a) with
+| x => u(x)
+| y => v(y)
+end] je enako [u(a)].
 
-      - [match (inr b) with
-         | x => u(x)
-         | y => v(y)
-         end] je enako [v(b)].
+- [match (inr b) with
+| x => u(x)
+| y => v(y)
+end] je enako [v(b)].
 
-      - [match t with
-         | inl x => inl x
-         | inr y => inr y
-         end] je enako [t].
+- [match t with
+| inl x => inl x
+| inr y => inr y
+end] je enako [t].
 
-*) 
+*)
 
 (** ** Prazen tip
 
-    Nekoliko bolj nenavaden je prazen tip:
+Nekoliko bolj nenavaden je prazen tip:
 
-    - _formacija_: [Empty_set] je tip
-   
-    - _vpeljava_: ni pravil za uporabo
+- _formacija_: [Empty_set] je tip
+- _vpeljava_: ni pravil za uporabo
 
-    - _uporaba_: če [t : Empty_set], potem ima [match t with end] tip [A]
+- _uporaba_: če [t : Empty_set], potem ima [match t with end] tip [A]
+                                            tu ni nič za with ker ni treba obravnavati nobenih primerov :)
 
-    - _enačbe_: [match t with end] je enako [a] za vse [a : A]
+- _enačbe_: [match t with end] je enako [a] za vse [a : A]
 *)
 
 Section FunkcijeVsote.
@@ -223,11 +275,38 @@ Section FunkcijeVsote.
 
   (* S stavkom match obravnavmo element, ki je vsota tipov. *)
 
-  Definition vaja3_2 : A + B -> B + A.
-  Admitted.
+  Definition vaja3_2 : A + B -> B + A :=
+    fun u : A + B =>
+      match u with
+        | inl x => inr x
+        | inr y => inl y
+      end.
 
-  Definition vaja3_3 : (A + B) * C -> A * C + B * C.
-  Admitted.
+  Definition vaja3_3 : (A + B) * C -> A * C + B * C :=
+    fun p : (A + B) * C => 
+      match fst p with
+        | inl x => inl (x, snd p)
+        | inr y => inr (y, snd p)
+      end.
+  (* Proof.
+    tauto.
+  Defined.
+  Print vaja3_3. *)  (* tako vidimo rešitev ampak je grda :P *)
+  
+(* rešujemo še enkrat isto vajo drugače *)
+  Definition vaja3_3' : (A + B) * C -> A * C + B * C.
+  Proof.
+    intros [[a|b] c].
+    - left.
+      split.
+      exact a.
+      exact c. (* uporabi a in c *)
+    - right.
+      exact (b, c).
+  Defined.
+
+  Print vaja3_3'.
+
   
   Definition vaja3_4 : A * C + B * C -> (A + B) * C.
   Admitted.
@@ -254,32 +333,32 @@ Section Izomorfizmi2.
 
   Context {A B C : Type}.
 
-  Lemma vaja4_1 : A + B <~> B + A.
+  Definition vaja4_1 : A + B <~> B + A.
   Proof.
     admit.
   Qed.
 
-  Lemma vaja4_2 : (A + B) * C <~> A * C + B * C.
+  Definition vaja4_2 : (A + B) * C <~> A * C + B * C.
   Proof.
     admit.
   Qed.
 
-  Lemma vaja4_3 : (A + B -> C) <~> (A -> C) * (B -> C).
+  Definition vaja4_3 : (A + B -> C) <~> (A -> C) * (B -> C).
   Proof.
     admit.
   Qed.
 
-  Lemma vaja4_4 : Empty_set + A <~> A.
+  Definition vaja4_4 : Empty_set + A <~> A.
   Proof.
     admit.
   Qed.
 
-  Lemma vaja4_5 : (A -> Empty_set) <~> Empty_set.
+  Definition vaja4_5 : (A -> Empty_set) <~> Empty_set.
   Proof.
     admit.
   Qed.
 
-  Lemma vaja5_5 : (Empty_set -> A) <~> unit.
+  Definition vaja5_5 : (Empty_set -> A) <~> unit.
   Proof.
     admit.
   Qed.
@@ -290,7 +369,7 @@ Section Zabava.
   (** Pa še neka vaj za zabavo. *)
   Context {A B : Type}.
 
-  (* Koliko funkcij A * B -> A + B lahko definiraš? *)  
+  (* Koliko funkcij A * B -> A + B lahko definiraš? *)
   Definition vaja5_1_XX : A * B -> A + B.
   Admitted.
 
