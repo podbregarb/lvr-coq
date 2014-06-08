@@ -114,8 +114,7 @@ induction l.
   auto.
 Qed.
 
-(* Hocemo dokazat   S(pojavi x l)=pojavi(vstavi x l) 
-  pri tem lahko sklepamo, da je l urejen, saj nam rabi samo to. *)
+(* Hocemo dokazat   S(pojavi x l)=pojavi(vstavi x l) *)
 Lemma enakost (x:Z) (l : list Z): 
 S(pojavi x l)=pojavi x (vstavi x l).
 Proof.
